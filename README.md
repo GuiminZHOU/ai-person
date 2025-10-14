@@ -66,7 +66,7 @@ ollama pull qwen2.5
 使用Python启动本地服务器：
 
 ```bash
-cd ai_person
+cd ai-person
 python -m http.server 8000
 ```
 
@@ -106,38 +106,6 @@ python -m http.server 8000
 - getUserMedia (麦克风访问)
 - Fetch API (Ollama通信)
 
-## 故障排除
-
-### 常见问题
-
-#### 1. 麦克风权限被拒绝
-- 确保网站有麦克风访问权限
-- 检查浏览器设置中的权限管理
-- 在macOS系统偏好设置中检查麦克风权限
-
-#### 2. Ollama连接失败
-- 确保Ollama服务正在运行
-- 检查API地址是否正确
-- 确认防火墙没有阻止连接
-
-#### 3. 语音识别不准确
-- 检查语言设置是否正确
-- 确保环境安静，减少背景噪音
-- 尝试调整麦克风音量
-
-#### 4. 语音合成无声
-- 检查系统音量
-- 确认选择了合适的语音
-- 尝试调整语速设置
-
-### 调试信息
-
-在浏览器控制台中可以查看详细的调试信息：
-- 语音识别状态
-- API调用日志
-- 错误信息
-- 性能统计
-
 ## 项目结构
 
 ```
@@ -148,30 +116,6 @@ python -m http.server 8000
 ├── design.md          # 设计文档
 ├── outline.md         # 项目概述
 └── README.md          # 说明文档
-```
-
-## 自定义配置
-
-### 修改默认设置
-在`main.js`中可以修改默认配置：
-
-```javascript
-this.settings = {
-    language: 'zh-CN',        // 默认语言
-    voice: null,              // 默认语音
-    rate: 1.0,                // 默认语速
-    model: 'qwen2.5',          // 默认模型
-    apiUrl: 'http://localhost:11434/api/generate',  // API地址
-    maxTokens: 512,           // 最大响应长度
-    temperature: 0.7          // 温度参数
-};
-```
-
-### 添加新模型
-在设置面板中添加新的模型选项：
-
-```html
-<option value="newmodel">New Model</option>
 ```
 
 享受您的AI语音对话体验！🎉
