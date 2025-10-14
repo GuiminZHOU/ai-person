@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI语音对话助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(0, 212, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .message-bubble {
+            max-width: 80%;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .recording-indicator {
+            animation: recordingPulse 1s infinite;
+        }
+        
+        @keyframes recordingPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        .avatar-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+        
+        .avatar-ring {
+            position: absolute;
+            border: 3px solid rgba(0, 212, 255, 0.3);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .volume-bar {
+            width: 4px;
+            background: linear-gradient(to top, #10b981, #00d4ff);
+            border-radius: 2px;
+            margin: 0 1px;
+            transition: height 0.1s ease;
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: blink 2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body class="text-white">
+    <!-- 浮动粒子背景 -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <!-- 顶部状态栏 -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-effect">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">AI</span>
+                    </div>
+                    <h1 class="text-xl font-bold">语音对话助手</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="status-indicator" id="connectionStatus"></div>
+                        <span class="text-sm" id="statusText">就绪</span>
+                    </div>
+                    <button id="settingsBtn" class="p-2 rounded-lg glass-effect hover:bg-white/20 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="pt-20 pb-32 container mx-auto px-4">
+        <!-- 数字人头像区域 -->
+        <section class="text-center mb-8">
+            <div class="avatar-container mb-6">
+                <!-- 外层光环 -->
+                <div class="avatar-ring" style="width: 220px; height: 220px; top: -10px; left: -10px;"></div>
+                <div class="avatar-ring" style="width: 240px; height: 240px; top: -20px; left: -20px; animation-delay: -3s;"></div>
+                <div class="avatar-ring" style="width: 260px; height: 260px; top: -30px; left: -30px; animation-delay: -6s;"></div>
+                
+                <!-- 头像 -->
+                <div class="relative w-full h-full rounded-full overflow-hidden glass-effect glow-effect">
+                    <img src="ai_avatar.png" alt="AI Assistant" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-blue-500/20 to-transparent"></div>
+                </div>
+                
+                <!-- 语音可视化容器 -->
+                <div id="audioVisualizer" class="absolute inset-0 pointer-events-none"></div>
+            </div>
+            
+            <!-- 音量指示器 -->
+            <div class="flex items-center justify-center space-x-1 mb-4" id="volumeIndicator">
+                <!-- 动态生成音量条 -->
+            </div>
+            
+            <!-- 当前状态 -->
+            <div class="text-center">
+                <h2 class="text-2xl font-bold mb-2" id="aiStatus">准备就绪</h2>
+                <p class="text-gray-300 text-sm" id="aiStatusDetail">点击麦克风开始对话</p>
+            </div>
+        </section>
+
+        <!-- 对话历史区域 -->
+        <section class="max-w-4xl mx-auto mb-8">
+            <div class="glass-effect rounded-2xl p-6 min-h-96">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">对话历史</h3>
+                    <button id="clearChat" class="text-sm text-gray-400 hover:text-white transition-colors">
+                        清空对话
+                    </button>
+                </div>
+                <div id="chatMessages" class="space-y-4 max-h-96 overflow-y-auto">
+                    <!-- 消息将动态添加到这里 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 语音识别置信度图表 -->
+        <section class="max-w-4xl mx-auto mb-8">
+            <div class="glass-effect rounded-2xl p-6">
+                <h3 class="text-lg font-semibold mb-4">语音识别置信度</h3>
+                <div id="confidenceChart" style="width: 100%; height: 200px;"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 语音控制按钮区域 -->
+    <footer class="fixed bottom-0 left-0 right-0 z-50 glass-effect">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-center space-x-6">
+                <!-- 主录音按钮 -->
+                <button id="recordBtn" class="relative w-20 h-20 rounded-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 transition-all duration-300 glow-effect flex items-center justify-center">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                    </svg>
+                </button>
+                
+                <!-- 播放/暂停按钮 -->
+                <button id="playBtn" class="w-12 h-12 rounded-full glass-effect hover:bg-white/20 transition-colors flex items-center justify-center opacity-50 cursor-not-allowed" disabled>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10v4a2 2 0 002 2h2a2 2 0 002-2v-4M9 10V9a2 2 0 012-2h2a2 2 0 012 2v1"></path>
+                    </svg>
+                </button>
+                
+                <!-- 停止按钮 -->
+                <button id="stopBtn" class="w-12 h-12 rounded-full glass-effect hover:bg-white/20 transition-colors flex items-center justify-center opacity-50 cursor-not-allowed" disabled>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h6v4H9z"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- 快捷设置 -->
+            <div class="flex items-center justify-center space-x-4 mt-4">
+                <select id="languageSelect" class="glass-effect px-3 py-1 rounded-lg text-sm bg-transparent">
+                    <option value="zh-CN">中文</option>
+                    <option value="en-US">English</option>
+                </select>
+                
+                <select id="voiceSelect" class="glass-effect px-3 py-1 rounded-lg text-sm bg-transparent">
+                    <option value="">选择语音...</option>
+                </select>
+                
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm">语速:</label>
+                    <input type="range" id="rateSlider" min="0.5" max="2" step="0.1" value="1" class="w-20">
+                    <span id="rateValue" class="text-sm">1.0</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 设置面板模态框 -->
+    <div id="settingsModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="modalBackdrop"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 glass-effect rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold">设置</h3>
+                <button id="closeSettings" class="p-1 hover:bg-white/20 rounded-lg transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Ollama 模型</label>
+                    <select id="modelSelect" class="w-full glass-effect px-3 py-2 rounded-lg bg-transparent">
+                        <option value="qwen2.5">Qwen2.5</option>
+                        <option value="mistral">Mistral</option>
+                        <option value="llama3.2">Llama3.2</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Ollama API 地址</label>
+                    <input type="text" id="apiUrl" value="http://localhost:11434/api/generate" 
+                           class="w-full glass-effect px-3 py-2 rounded-lg bg-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">最大响应长度</label>
+                    <input type="number" id="maxTokens" value="512" min="100" max="2048"
+                           class="w-full glass-effect px-3 py-2 rounded-lg bg-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">温度</label>
+                    <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7"
+                           class="w-full">
+                    <span id="temperatureValue" class="text-sm text-gray-400">0.7</span>
+                </div>
+                
+                <button id="testConnection" class="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all">
+                    测试连接
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载指示器 -->
+    <div id="loadingIndicator" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+            <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p id="loadingText" class="text-lg">AI正在思考...</p>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
