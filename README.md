@@ -1,121 +1,124 @@
-# AI语音对话助手
+# AI Voice Assistant
 
-一个基于Web的AI语音对话系统，集成了语音识别(ASR)、Ollama大语言模型和语音合成(TTS)功能，不需要联网，开箱即用~~
+[中文版](README_CN.md)
 
-## 功能特性
+A web-based AI voice conversation system integrating speech recognition (ASR), Ollama large language model, and speech synthesis (TTS) capabilities. No internet connection required, run entirely locally, enjoy~~
 
-### 🎤 语音识别 (ASR)
-- 使用浏览器原生Web Speech API
-- 支持中文和英文识别
-- 实时语音转文本
-- 语音识别置信度可视化
+## Features
 
-### 🤖 AI对话
-- 集成Ollama本地大语言模型
-- 支持多种开源模型 (Llama 2, Mistral, CodeLlama等)
-- 流式响应处理
-- 对话历史管理
+### 🎤 Speech Recognition (ASR)
+- Uses browser native Web Speech API
+- Supports Chinese and English recognition
+- Real-time speech-to-text conversion
+- Speech recognition confidence visualization
 
-### 🔊 语音合成 (TTS)
-- 使用浏览器原生Speech Synthesis API
-- 多音色选择
-- 语速和音调调节
-- 实时音频播放
+### 🤖 AI Conversation
+- Integrates Ollama local large language model
+- Supports multiple open-source models (Llama 2, Mistral, CodeLlama, etc.)
+- Streaming response processing
+- Conversation history management
 
-### 🎨 现代化界面
-- 未来科技感设计
-- 实时音频可视化效果
-- 响应式布局
-- 流畅的动画交互
+### 🔊 Speech Synthesis (TTS)
+- Uses browser native Speech Synthesis API
+- Multiple voice selection
+- Speech rate and pitch adjustment
+- Real-time audio playback
 
-## 技术栈
+### 🎨 Modern Interface
+- Futuristic design
+- Real-time audio visualization effects
+- Responsive layout
+- Smooth animation interactions
 
-- **前端**: HTML5, CSS3 (Tailwind CSS), JavaScript (ES6+)
-- **ASR**: Web Speech API (浏览器原生)
-- **AI模型**: Ollama API (本地运行)
-- **TTS**: Web Speech API (浏览器原生)
-- **视觉效果**: Anime.js, p5.js, ECharts.js
+## Tech Stack
 
-## 安装和配置
+- **Frontend**: HTML5, CSS3 (Tailwind CSS), JavaScript (ES6+)
+- **ASR**: Web Speech API (browser native)
+- **AI Model**: Ollama API (local running)
+- **TTS**: Web Speech API (browser native)
+- **Visual Effects**: Anime.js, p5.js, ECharts.js
 
-### 1. 安装Ollama
+## Installation and Configuration
 
-在macOS上安装Ollama：
+### 1. Install Ollama
+
+Install Ollama on macOS:
 
 ```bash
 brew install ollama
 ```
 
-或者从官网下载安装包：
+Or download the installer from the official website:
 https://ollama.ai
 
-### 2. 下载并运行模型
+### 2. Download and Run Models
 
-启动Ollama服务：
+Start the Ollama service:
 ```bash
 ollama serve
 ```
 
-下载模型（以qwen2.5为例）：
+Download a model (using qwen2.5 as an example):
 ```bash
 ollama pull qwen2.5
 ```
 
-### 3. 启动Web应用
+### 3. Launch the Web Application
 
-使用Python启动本地服务器：
+Start a local server using Python:
 
 ```bash
 cd ai-person
 python -m http.server 8000
 ```
 
-然后在浏览器中访问：`http://localhost:8000`
+Then access in your browser: `http://localhost:8000`
 
-## 使用方法
+## Usage
 
-### 1. 首次设置
-- 打开设置面板（右上角齿轮图标）
-- 配置Ollama API地址（默认：http://localhost:11434/api/generate）
-- 选择要使用的AI模型
-- 点击"测试连接"确保连接正常
+### 1. Initial Setup
+- Open the settings panel (gear icon in the top right)
+- Configure the Ollama API address (default: http://localhost:11434/api/generate)
+- Select the AI model to use
+- Click "Test Connection" to ensure the connection is working
 
-### 2. 开始对话
-- 点击中央的麦克风按钮开始录音
-- 对着麦克风说话
-- 说完后等待AI响应
-- AI会以语音形式回复
+### 2. Start Conversing
+- Click the microphone button in the center to start recording
+- Speak into the microphone
+- Wait for the AI response after speaking
+- The AI will reply in voice form
 
-### 3. 设置选项
-- **语言选择**: 中文(zh-CN) / 英文(en-US)
-- **语音选择**: 选择不同的合成语音
-- **语速调节**: 调整语音播放速度
-- **模型配置**: 温度、最大响应长度等参数
+### 3. Settings Options
+- **Language Selection**: Chinese (zh-CN) / English (en-US)
+- **Voice Selection**: Choose different synthetic voices
+- **Speech Rate Adjustment**: Adjust voice playback speed
+- **Model Configuration**: Temperature, maximum response length, and other parameters
 
-## 浏览器兼容性
+## Browser Compatibility
 
-### 支持的功能
-- ✅ Chrome 88+ (完全支持)
-- ✅ Firefox 86+ (完全支持)
-- ✅ Safari 14.1+ (部分支持)
-- ✅ Edge 88+ (完全支持)
+### Supported Features
+- ✅ Chrome 88+ (fully supported)
+- ✅ Firefox 86+ (fully supported)
+- ✅ Safari 14.1+ (partially supported)
+- ✅ Edge 88+ (fully supported)
 
-### 必需的功能支持
-- Web Speech API (语音识别和合成)
-- Web Audio API (音频可视化)
-- getUserMedia (麦克风访问)
-- Fetch API (Ollama通信)
+### Required Feature Support
+- Web Speech API (speech recognition and synthesis)
+- Web Audio API (audio visualization)
+- getUserMedia (microphone access)
+- Fetch API (Ollama communication)
 
-## 项目结构
+## Project Structure
 
 ```
-├── index.html          # 主页面
-├── main.js             # 核心JavaScript逻辑
-├── ai_avatar.png       # AI头像图片
-├── hero_background.png # 背景图片
-├── outline.md          # 项目概述
-├── demo.png            # 页面样式示例图片
-└── README.md           # 说明文档
+├── index.html          # Main page
+├── main.js             # Core JavaScript logic
+├── ai_avatar.png       # AI avatar image
+├── hero_background.png # Background image
+├── outline.md          # Project overview
+├── demo.png            # Page style example image
+└── README.md           # Documentation
 ```
 
-享受您的AI语音对话体验！🎉
+Enjoy! 🎉
+
