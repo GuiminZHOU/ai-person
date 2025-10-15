@@ -110,12 +110,12 @@ python -m http.server 8000
 
 ```
 ├── index.html          # 主页面
-├── main.js            # 核心JavaScript逻辑
-├── ai_avatar.png      # AI头像图片
+├── main.js             # 核心JavaScript逻辑
+├── ai_avatar.png       # AI头像图片
 ├── hero_background.png # 背景图片
-├── design.md          # 设计文档
-├── outline.md         # 项目概述
-└── README.md          # 说明文档
+├── outline.md          # 项目概述
+├── demo.png            # 页面样式示例图片
+└── README.md           # 说明文档
 ```
 
 享受您的AI语音对话体验！🎉
