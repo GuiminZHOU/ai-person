@@ -56,7 +56,7 @@ https://ollama.ai
 ollama serve
 ```
 
-下载模型（以Llama 2为例）：
+下载模型（以qwen2.5为例）：
 ```bash
 ollama pull qwen2.5
 ```
